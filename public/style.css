@@ -1,0 +1,9 @@
+/* public/style.css */
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #1a1a1d; /* A solid dark background for fallback */
+  color: #f0f0f0; /* Light text color for better readability */
+  min-height: 100vh;
+}
