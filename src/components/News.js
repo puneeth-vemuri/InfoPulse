@@ -24,7 +24,7 @@ const News = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState(defaultCategories);
 
-  const API_KEY = process.env.REACT_APP_NEWS_API_KEY;
+  const API_KEY = "a9efe6ec8ec14d3aa84729ef6642a8c7";
   
   // Fetch news from API
   const fetchNews = useCallback(async () => {
