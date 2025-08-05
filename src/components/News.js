@@ -220,96 +220,76 @@
 // };
 
 // export default News;
+// src/components/News.js
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import './News.css';
 
-// Guardian uses 'section' IDs for categories. These are common ones.
+// These categories match the available ones from the new API
 const defaultCategories = [
-  { id: 'world', name: 'Top Stories' },
+  { id: 'general', name: 'Top Stories' },
   { id: 'technology', name: 'Technology' },
   { id: 'business', name: 'Business' },
-  { id: 'film', name: 'Entertainment' }, // 'film' is a good proxy for entertainment
-  { id: 'sport', name: 'Sports' },
+  { id: 'entertainment', name: 'Entertainment' },
+  { id: 'sports', name: 'Sports' },
   { id: 'science', name: 'Science' },
-  { id: 'society', name: 'Health' } // 'society' often covers health topics
+  { id: 'health', name: 'Health' }
 ];
 
 const News = () => {
   const [displayedArticles, setDisplayedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('world'); // Default category
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categories, setCategories] = useState(defaultCategories);
+  const [activeCategory, setActiveCategory] = useState('general');
 
-  const API_KEY = process.env.REACT_APP_GUARDIAN_API_KEY;
+  // --- NO API KEY NEEDED ANYMORE ---
 
-  const fetchNews = useCallback(async (category, search) => {
+  const fetchNews = useCallback(async (category) => {
     setLoading(true);
     setError(null);
-
-    const baseUrl = 'https://content.guardianapis.com/search';
-    const params = {
-      'api-key': API_KEY,
-      'show-fields': 'thumbnail,trailText', // Important: tells the API to include images and descriptions
-      'page-size': 9, // Let's fetch 9 articles
-    };
-
-    if (search) {
-      params.q = encodeURIComponent(search);
-      // We don't filter by category when searching to get broader results
-    } else {
-      params.section = category;
-    }
-
+    
+    // --- SAURAV.TECH API URL ---
+    // We will use 'us' as the default country code for top headlines
+    const url = `https://saurav.tech/NewsAPI/top-headlines/category/${category}/us.json`;
+    
     try {
-      const res = await axios.get(baseUrl, { params });
+      const res = await axios.get(url);
       
-      // The articles are in `res.data.response.results`
-      if (res.data.response && res.data.response.results) {
-        setDisplayedArticles(res.data.response.results);
+      // The data structure is the same as the original NewsAPI
+      if (res.data && res.data.articles) {
+        setDisplayedArticles(res.data.articles);
       } else {
         setDisplayedArticles([]);
       }
 
     } catch (err) {
-      console.error("Error fetching from The Guardian API:", err);
-      setError('Failed to fetch news. Please check your Guardian API key or network connection.');
+      console.error("Error fetching from proxied API:", err);
+      setError('Failed to fetch news. The proxy service may be down.');
     } finally {
       setLoading(false);
     }
-  }, [API_KEY]); // Only depends on the API key
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      const newSearchCategory = { id: searchQuery, name: `Search: "${searchQuery}"` };
-      // Check if a search tab already exists to avoid duplicates
-      if (!categories.some(c => c.id === searchQuery)) {
-        setCategories([newSearchCategory, ...defaultCategories]);
-      }
-      setActiveCategory(newSearchCategory.id);
-      fetchNews(null, searchQuery); // Pass search query directly
-    }
-  };
+  }, []); // The function no longer depends on anything that changes
 
   const handleCategoryChange = (category) => {
-    setSearchQuery(''); // Clear search when a category is clicked
     setActiveCategory(category);
-    fetchNews(category, null); // Pass category directly
+    fetchNews(category);
   };
-
+  
   useEffect(() => {
     // Initial fetch on component mount
-    fetchNews(activeCategory, null);
-  }, []); // Run only once on mount
+    fetchNews(activeCategory);
+  }, [fetchNews, activeCategory]);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
   
+  const shortenText = (text, maxLength) => {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  };
+
   const renderSkeleton = () => (
     <div className="news-grid loading">
       {[...Array(9)].map((_, i) => (
@@ -324,7 +304,7 @@ const News = () => {
   const renderError = () => (
     <div className="error-container">
       <h3>⚠</h3><p>{error}</p>
-      <button className="retry-button" onClick={() => fetchNews(activeCategory, searchQuery)}>
+      <button className="retry-button" onClick={() => fetchNews(activeCategory)}>
         Try Again
       </button>
     </div>
@@ -332,8 +312,8 @@ const News = () => {
 
   const renderNoResults = () => (
     <div className="no-results">
-      <h3>No articles found.</h3>
-      <p>Try a different search term or select a category.</p>
+      <h3>No articles found for this category.</h3>
+      <p>Please select another category.</p>
     </div>
   );
 
@@ -344,18 +324,16 @@ const News = () => {
         <p>Your curated source of the latest headlines</p>
         <div className="controls">
           <div className="category-tabs">
-            {categories.map(category => (
+            {defaultCategories.map(category => (
               <button key={category.id} className={`tab ${activeCategory === category.id ? 'active' : ''}`} onClick={() => handleCategoryChange(category.id)}>
                 {category.name}
               </button>
             ))}
           </div>
-          <form className="search-container" onSubmit={handleSearch}>
-            <input type="text" placeholder="Search news..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-            <button type="submit" className="search-button">
-              <svg className="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-            </button>
-          </form>
+          
+          {/* --- SEARCH BAR IS NOW REMOVED --- */}
+          {/* Since the API doesn't support search, we remove the form to avoid confusion */}
+          
         </div>
       </div>
 
@@ -363,23 +341,22 @@ const News = () => {
        loading ? renderSkeleton() : 
        !displayedArticles || displayedArticles.length === 0 ? renderNoResults() : (
         <div className="news-grid">
-          {displayedArticles.map((article) => (
-            <div key={article.id} className="news-card">
-              {article.fields && article.fields.thumbnail ? (
-                <div className="news-image" style={{ backgroundImage: `url(${article.fields.thumbnail})` }}></div>
+          {displayedArticles.slice(0, 9).map((article, idx) => (
+            <div key={article.url || idx} className="news-card">
+              {article.urlToImage ? (
+                <div className="news-image" style={{ backgroundImage: `url(${article.urlToImage})` }}></div>
               ) : (
                 <div className="news-image placeholder"><div className="image-placeholder-icon">📰</div></div>
               )}
               <div className="news-content">
-                <div className="news-category">{article.sectionName}</div>
+                <div className="news-category">{activeCategory}</div>
                 <h3 className="news-title">
-                  <a href={article.webUrl} target="_blank" rel="noopener noreferrer">{article.webTitle}</a>
+                  <a href={article.url} target="_blank" rel="noopener noreferrer">{article.title}</a>
                 </h3>
-                {/* Use dangerouslySetInnerHTML because trailText contains HTML tags */}
-                <p className="news-description" dangerouslySetInnerHTML={{ __html: article.fields.trailText || '' }} />
+                <p className="news-description">{shortenText(article.description, 120)}</p>
                 <div className="news-footer">
-                  <span className="news-source">The Guardian</span>
-                  <span className="news-date">{formatDate(article.webPublicationDate)}</span>
+                  <span className="news-source">{article.source.name}</span>
+                  <span className="news-date">{formatDate(article.publishedAt)}</span>
                 </div>
               </div>
             </div>
