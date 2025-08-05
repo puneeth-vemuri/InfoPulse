@@ -1,0 +1,44 @@
+.text-rotate-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* Adjust font styles to match your h1 */
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #ffffff; /* Base color for the text */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  height: 60px; /* Set a fixed height to prevent layout shifts */
+}
+
+.text-rotate-word-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  white-space: pre-wrap;
+  position: relative;
+}
+
+.text-rotate-word {
+  display: inline-flex;
+  overflow: hidden; /* This is crucial for the animation */
+}
+
+.text-rotate-element {
+  display: inline-block;
+  color: #00ffcc; /* Accent color for the rotating text */
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.9);
+}
+
+.text-rotate-space {
+  white-space: pre;
+}
+
+/* Responsive font size */
+@media (max-width: 768px) {
+  .text-rotate-container {
+    font-size: 2.5rem;
+    height: 50px;
+  }
+}

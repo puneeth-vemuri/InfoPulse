@@ -1,0 +1,27 @@
+.shiny-text {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  margin-top: 8px;
+  color: #c7d2fe; /* A nice light indigo color that matches the theme */
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 5s linear infinite;
+  /* Required for the background-clip to work */
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

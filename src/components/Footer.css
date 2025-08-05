@@ -1,0 +1,75 @@
+/* src/components/Footer.css */
+
+.footer {
+  position: relative; 
+  z-index: 2;
+  background: rgba(21, 28, 46, 0.5);
+  border-top: 1px solid rgba(100, 116, 139, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  width: 95%;
+  max-width: 1200px;
+  margin: 24px auto 24px;
+  padding: 20px 30px;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+/* ⬇️ THIS IS THE UPDATED SECTION ⬇️ */
+.social-links {
+  display: flex; /* Make it a flex container */
+  gap: 1.5rem;   /* Add space between the icons */
+}
+
+.social-links a {
+  color: #a5b4fc;
+  font-size: 2rem;
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.social-links a:hover {
+  color: #00ffcc;
+  transform: scale(1.1);
+}
+/* ⬆️ END OF UPDATED SECTION ⬆️ */
+
+
+.attribution p,
+.copyright p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.attribution a {
+  color: #a5b4fc;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.attribution a:hover {
+  color: #e0f7fa;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .footer {
+    width: calc(100% - 20px);
+    padding: 15px 20px;
+  }
+  
+  .attribution p,
+  .copyright p {
+    font-size: 0.8rem;
+  }
+}

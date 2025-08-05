@@ -9,24 +9,33 @@
 .app-header {
   padding: 40px 20px 20px;
   text-align: center;
-  color: #ffffff;
-  position: relative; /* Ensure header is on top */
+  position: relative;
   z-index: 2;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* ⬇️ NEW STYLE FOR THE TITLE CONTAINER ⬇️ */
+.title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* Allows text to wrap on small screens */
+  gap: 0.5rem; /* Adds a little space between "InfoPulse:" and the rotating text */
+}
+
+
+/* This style is now handled inside RotatingText.css, but we keep the static part */
 .app-header h1 {
   font-size: 3rem;
   font-weight: 700;
   margin: 0;
   letter-spacing: 1px;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-.app-header p {
-  font-size: 1.1rem;
-  opacity: 0.8;
-  margin-top: 8px;
-}
+/* This is now handled by ShinyText.css */
+/* .app-header p { ... } */
+
 
 /* --- Main Content Layout --- */
 .content-layer {
@@ -37,6 +46,7 @@
   align-items: center;
   gap: 32px;
   padding: 0 20px 40px;
+  flex-grow: 1;
 }
 
 /* --- Unified Component Wrapper Style --- */
@@ -58,10 +68,6 @@
 @media (max-width: 768px) {
   .app-header h1 {
     font-size: 2.5rem;
-  }
-
-  .app-header p {
-    font-size: 1rem;
   }
   
   .content-layer {
