@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import './News.css';
 
-// The News API categories
+// These categories match The News API
 const defaultCategories = [
   { id: 'general', name: 'Top Stories' },
   { id: 'tech', name: 'Technology' },
@@ -19,11 +19,18 @@ const News = () => {
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState('general');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const [categories, setCategories] = useState(defaultCategories);
 
   const API_KEY = process.env.REACT_APP_THENEWSAPI_KEY;
 
-  const fetchNews = useCallback(async (category, search) => {
+  const fetchNews = useCallback(async () => {
+    if (!API_KEY) {
+      setError("API Key is missing. Make sure it's set in your deployment environment variables.");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     
@@ -35,27 +42,17 @@ const News = () => {
       limit: 9,
     };
 
-    if (search) {
+    if (isSearching && searchQuery) {
       url = `${baseUrl}all`;
-      params.search = encodeURIComponent(search);
+      params.search = encodeURIComponent(searchQuery);
     } else {
       url = `${baseUrl}top`;
-      params.categories = category;
+      params.categories = activeCategory;
     }
     
     try {
       const res = await axios.get(url, { params });
-      
-      if (search) {
-        const newSearchCategory = { id: search, name: `Search: "${search}"` };
-        if (!categories.some(c => c.id === search)) {
-          setCategories([newSearchCategory, ...defaultCategories]);
-        }
-        setActiveCategory(newSearchCategory.id);
-      }
-      
       setDisplayedArticles(res.data.data);
-
     } catch (err) {
       console.error("Error fetching from The News API:", err);
       let errorMessage = 'Failed to fetch news. Please check your network connection.';
@@ -66,24 +63,30 @@ const News = () => {
     } finally {
       setLoading(false);
     }
-  }, [API_KEY, categories]);
+  }, [API_KEY, activeCategory, searchQuery, isSearching]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      fetchNews(null, searchQuery);
+      const newSearchCategory = { id: searchQuery, name: `Search: "${searchQuery}"` };
+      if (!categories.some(c => c.id === searchQuery)) {
+        setCategories([newSearchCategory, ...defaultCategories]);
+      }
+      setActiveCategory(newSearchCategory.id);
+      setIsSearching(true);
     }
   };
 
   const handleCategoryChange = (category) => {
     setSearchQuery('');
     setActiveCategory(category);
-    fetchNews(category, null);
+    setIsSearching(false);
   };
   
+  // This hook now correctly watches for changes and triggers the fetch.
   useEffect(() => {
-    fetchNews(activeCategory, null);
-  }, []); // Initial fetch
+    fetchNews();
+  }, [fetchNews]);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -95,39 +98,26 @@ const News = () => {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   };
 
-  // --- ⬇️ THIS SECTION IS NOW CORRECT AND COMPLETE ⬇️ ---
   const renderSkeleton = () => (
     <div className="news-grid loading">
       {[...Array(9)].map((_, i) => (
-        <div key={i} className="news-card skeleton">
-          <div className="skeleton-image"></div>
-          <div className="skeleton-content">
-            <div className="skeleton-line"></div>
-            <div className="skeleton-line"></div>
-            <div className="skeleton-line"></div>
-          </div>
-        </div>
+        <div key={i} className="news-card skeleton"><div className="skeleton-image"></div><div className="skeleton-content"><div className="skeleton-line"></div><div className="skeleton-line"></div><div className="skeleton-line"></div></div></div>
       ))}
     </div>
   );
 
   const renderError = () => (
     <div className="error-container">
-      <h3>⚠</h3>
-      <p>{error}</p>
-      <button className="retry-button" onClick={() => fetchNews(activeCategory, searchQuery)}>
-        Try Again
-      </button>
+      <h3>⚠</h3><p>{error}</p>
+      <button className="retry-button" onClick={fetchNews}>Try Again</button>
     </div>
   );
 
   const renderNoResults = () => (
     <div className="no-results">
-      <h3>No articles found.</h3>
-      <p>Try a different search term or select a category.</p>
+      <h3>No articles found.</h3><p>Try a different search term or select a category.</p>
     </div>
   );
-  // --- ⬆️ END OF CORRECTED SECTION ⬆️ ---
 
   return (
     <div className="news-container">
