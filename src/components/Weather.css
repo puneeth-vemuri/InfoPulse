@@ -4,7 +4,8 @@
   font-family: 'Poppins', sans-serif;
   color: #e0f7fa;
   padding: 1rem;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
 
@@ -16,12 +17,14 @@
   align-items: center;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(0, 191, 255, 0.3);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .weather-title {
   font-family: 'Courier New', monospace;
   font-weight: bold;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   letter-spacing: 1px;
   color: #00ffcc;
   text-shadow: 0 0 8px rgba(0, 255, 255, 0.9);
@@ -75,7 +78,7 @@
 .location-selector-card { grid-column: 1 / -1; }
 .location-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr; /* Mobile-first: single column */
   gap: 1rem;
 }
 .location-grid label {
@@ -95,14 +98,13 @@
 }
 
 /* --- Current Weather Card --- */
-.current-weather-card {
-  grid-column: 1 / -1; /* Make it span full width */
-}
 .current-weather-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1.5rem;
+  flex-direction: column; /* Mobile first: stack location and temp */
+  gap: 0.5rem;
 }
 .current-weather-location h2 {
   font-size: 2rem;
@@ -111,9 +113,9 @@
   color: #ffffff;
 }
 .current-weather-location p { margin: 0; color: #bbdefb; }
-.current-weather-temp { text-align: right; }
+.current-weather-temp { text-align: left; }
 .current-weather-temp .temp {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: bold;
   margin: 0;
   color: #00ffcc;
@@ -122,29 +124,29 @@
 .current-weather-temp .description {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.5rem;
   color: #bbdefb;
   text-transform: capitalize;
 }
 
 .current-weather-main-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr;
+  display: flex; /* Mobile-first: single column flex layout */
+  flex-direction: column;
   gap: 1.5rem;
-  align-items: center;
 }
 
 .weather-animation-container {
   background-color: rgba(0, 0, 20, 0.3);
   border-radius: 12px;
-  height: 100%;
+  width: 100%;
+  min-height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.details-grid {
+.details-grid, .details-grid-secondary {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
@@ -162,25 +164,8 @@
   color: #bbdefb;
 }
 
-.detail-item svg {
-  width: 24px;
-  height: 24px;
-  fill: #00ffcc;
-}
-
-.detail-item .value {
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
-  font-size: 1.1rem;
-  color: #e0f7fa;
-}
-
-.details-grid-secondary {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 1rem;
-}
+.detail-item svg { width: 32px; height: 32px; fill: #00ffcc; }
+.detail-item .value { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.1rem; color: #e0f7fa; }
 
 .detail-item-small {
   display: flex;
@@ -194,58 +179,76 @@
   font-size: 0.9rem;
   color: #bbdefb;
 }
-.detail-item-small svg {
-  width: 24px;
-  height: 24px;
-  stroke: #00ffcc;
-  margin-bottom: 0.25rem;
-}
-.detail-item-small .value {
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
-  color: #e0f7fa;
-}
+.detail-item-small svg { width: 32px; height: 32px; stroke: #00ffcc; margin-bottom: 0.25rem; }
+.detail-item-small .value { font-family: 'Courier New', monospace; font-weight: bold; color: #e0f7fa; }
 
-/* --- Hourly Forecast --- */
-.hourly-forecast-card {
-  grid-column: 1 / -1;
-}
-
-.hourly-forecast-scroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 1rem;
-  padding: 0.75rem 0.25rem;
-}
-.hourly-item {
-  min-width: 90px;
-  text-align: center;
-  padding: 1rem;
-  background-color: rgba(0, 20, 40, 0.5);
-  border-radius: 12px;
-}
+/* --- Hourly Forecast & 8-Day Forecast --- */
+.hourly-forecast-card, .full-width-chart-card { grid-column: 1 / -1; }
+.hourly-forecast-scroll { display: flex; overflow-x: auto; gap: 1rem; padding: 0.75rem 0.25rem; }
+.hourly-item { min-width: 90px; text-align: center; padding: 1rem; background-color: rgba(0, 20, 40, 0.5); border-radius: 12px; }
 .hourly-time { font-size: 0.9rem; color: #bbdefb; margin: 0 0 0.5rem; }
 .hourly-icon { margin-bottom: 0.5rem; }
 .hourly-temp { font-weight: 600; font-size: 1.1rem; margin: 0 0 0.5rem; }
-.hourly-precipitation {
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  color: #a0d0ff;
-  opacity: 0.8;
-}
+.hourly-precipitation { font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 3px; color: #a0d0ff; opacity: 0.8; }
+.forecast-chart-container { height: 300px; }
 
-/* --- Responsive & Scrollbar --- */
+/* --- Loading and Error --- */
+.loading-container, .error-container { text-align: center; padding: 3rem; background-color: rgba(15, 23, 42, 0.8); border-radius: 16px; }
+.error-container { color: #ff8888; border: 1px solid #ff5555; }
+.spinner { display: inline-block; width: 50px; height: 50px; border: 5px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: #00ffcc; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- Scrollbar --- */
 .hourly-forecast-scroll::-webkit-scrollbar { height: 8px; }
 .hourly-forecast-scroll::-webkit-scrollbar-track { background: rgba(0, 20, 40, 0.5); border-radius: 4px; }
 .hourly-forecast-scroll::-webkit-scrollbar-thumb { background: #2a5298; border-radius: 4px; }
 .hourly-forecast-scroll::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
 
-@media (max-width: 1024px) {
-  .current-weather-main-grid {
-    grid-template-columns: 1fr;
+/* --- ⬇️ DESKTOP & TABLET OVERRIDES ⬇️ --- */
+
+/* Medium screens (tablets) */
+@media (min-width: 768px) {
+  .weather-card { padding: 1.5rem; }
+  .weather-title { font-size: 1.8rem; }
+  
+  .location-grid {
+    grid-template-columns: repeat(3, 1fr); /* Back to 3 columns */
   }
-  .weather-animation-container { min-height: 180px; }
+
+  .current-weather-top {
+    flex-direction: row; /* Side-by-side location and temp */
+    align-items: flex-start;
+  }
+  
+  .current-weather-temp {
+    text-align: right;
+  }
+
+  .current-weather-temp .description {
+    justify-content: flex-end;
+  }
+
+  .current-weather-temp .temp {
+    font-size: 3.5rem;
+  }
+
+  /* Keep details grid at 2 columns */
+  .details-grid, .details-grid-secondary {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Large screens (desktops) */
+@media (min-width: 1024px) {
+  .current-weather-main-grid {
+    /* Restore the 3-column grid for desktop */
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+  }
+
+  /* Make icons smaller on desktop where they have less space */
+  .detail-item svg, .detail-item-small svg {
+    width: 24px;
+    height: 24px;
+  }
 }
