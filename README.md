@@ -31,7 +31,7 @@ InfoPulse is a modern, all-in-one dashboard built with React. It provides a real
 
 1.  Clone the repository:
     ```sh
-    git clone https://github.com/YOUR_USERNAME/InfoPulse.git
+    git clone https://github.com/puneeth-vemuri/InfoPulse.git
     ```
 2.  Navigate into the project directory:
     ```sh
